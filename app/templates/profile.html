@@ -5,26 +5,26 @@
 
 {% block main %}
 <div class="container">
-  <form action="{{ url_for('profile') }}" method="post">
-      {{form.image.label}}: {{ form.image}}<br /><br />
+  <form action="{{ url_for('profile') }}" method="post" enctype="multipart/form-data">
+      {{form.image.label}}: {{form.image}}<br /><br />
       {% for message in form.image.errors %}
-        <div class="flash" style="color: red;">{{message}}</div>
+        <div class="flash">{{message}}</div>
       {% endfor %}
       {{form.firstname.label}}: {{ form.firstname}}<br /><br />
       {% for message in form.firstname.errors%}
-        <div class="flash" style="color: red;">{{message }}</div>
+        <div class="flash">{{message }}</div>
       {% endfor %}
       {{form.lastname.label}}: {{ form.lastname }}<br /><br />
       {% for message in form.lastname.errors %}
-        <div class="flash" style="color: red;">{{message}}</div>
+        <div class="flash">{{message}}</div>
       {% endfor %}
       {{form.age.label}}: {{form.age }}<br /><br />
       {% for message in form.age.errors %}
-        <div class="flash" style="color: red;">{{ message }}</div>
+        <div class="flash">{{ message }}</div>
       {% endfor %}
       {{form.sex.label}}: {{ form.sex}}<br /><br />
       {% for message in form.sex.errors %}
-        <div class="flash" style="color: red;">{{ message }}</div>
+        <div class="flash">{{ message }}</div>
       {% endfor %}
       {{form.submit}}
  </form>
