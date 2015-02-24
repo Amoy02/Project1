@@ -38,7 +38,7 @@ def person():
 @app.route("/profile" , methods=["GET" , "POST"])
 def profile():
   form = UserProfile()
-  if request.method == 'POST':
+  if request.method == 'POST' and form.validate():
     image ='pic'
     goingtoadd=Users(image, form.firstname.data, form.lastname.data, form.age.data, form.sex.data)
     db.session.add(goingtoadd)
