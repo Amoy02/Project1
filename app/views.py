@@ -5,10 +5,15 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 
 This file creates your application.
 """
-
+import time
 from app import app
 from flask import render_template, request, redirect, url_for
-
+from app import db
+from app.models import Users
+from .forms import UserProfile
+from flask import jsonify
+import models
+from app.models import ProfileSchema
 
 ###
 # Routing for your application.
@@ -25,7 +30,36 @@ def about():
     """Render the website's about page."""
     return render_template('about.html')
 
+@app.route('/persons')
+def person():
+  first_user = db.session.query(User).first()
+  return jsonify()
 
+@app.route("/profile" , methods=["GET" , "POST"])
+def profile():
+  form = UserProfile()
+  if request.method == 'POST':
+    image ='pic'
+    goingtoadd=Users(image, form.firstname.data, form.lastname.data, form.age.data, form.sex.data)
+    db.session.add(goingtoadd)
+    db.session.commit()
+  return render_template('profile.html', form=form)
+
+@app.route("/profiles", methods=["GET" , "POST"])
+def profiles():
+  user=models.Users.query.all()
+  myData=ProfileSchema(many=True)
+  data= myData.dump(user)
+  return jsonify({"Users": data.data})
+  
+
+@app.route("/profile/<userid>" , methods=["GET" , "POST"])
+def profileuserid(userid):
+  user = Users.query.filter_by(userid=userid).first()
+  date=str(user.profile_add_on)
+  return jsonify(userid=user.userid, profile_add_on=date, firstname=user.firstname, lastname=user.lastname, age=user.age, sex=user.sex)
+  
+  
 ###
 # The functions below should be applicable to all Flask apps.
 ###
@@ -53,6 +87,9 @@ def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
 
+def timeinfo():
+  now = time.strftime("%Y-%m-%d")
+  return now
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8888")
