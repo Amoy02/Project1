@@ -25,7 +25,7 @@ class Users(db.Model):
     self.profile_add_on = views.timeinfo()
 
   def __repr__(self):
-    return '<User %r>' % self.firstname
+    return '<Users %r %r>' % (self.lastname,self.firstname)
   
 class ProfileSchema(Schema):
   name= fields.Method("name")

@@ -8,7 +8,7 @@ class UserProfile(Form):
   firstname = TextField('First Name', validators=[Required("Please enter your first name")])
   lastname = TextField('Last Name', validators=[Required("Please enter your last name")])
   age = IntegerField('Age',validators=[Required("Please enter your age")])
-  sex = SelectField('Sex', choices=[('fmlae','female'), ('mle', 'male')])
+  sex = SelectField('Sex', choices=[('Female','Female'), ('Male', 'Male')])
   submit = SubmitField("Submit")
 
   

@@ -5,6 +5,7 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 
 This file creates your application.
 """
+import os
 import time
 from app import app
 from flask import render_template, request, redirect, url_for
@@ -14,10 +15,15 @@ from .forms import UserProfile
 from flask import jsonify
 import models
 from app.models import ProfileSchema
+from werkzeug import secure_filename
+from flask_wtf.file import FileField
 
 ###
 # Routing for your application.
 ###
+
+def allowed_file(filename):
+  return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def home():
@@ -32,32 +38,44 @@ def about():
 
 @app.route('/persons')
 def person():
-  first_user = db.session.query(User).first()
+  first_user = db.session.query(Users).first()
   return jsonify()
 
-@app.route("/profile" , methods=["GET" , "POST"])
+@app.route("/profile/" , methods=["GET" , "POST"])
 def profile():
   form = UserProfile()
-  if request.method == 'POST' and form.validate():
-    image ='pic'
-    goingtoadd=Users(image, form.firstname.data, form.lastname.data, form.age.data, form.sex.data)
+  if request.method == 'POST':
+    file = request.files['image']
+    image = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], image))
+    firstname = form.firstname.data
+    lastname = form.lastname.data
+    age = form.age.data
+    sex = form.sex.data
+    goingtoadd=Users(image, firstname, lastname, age, sex)
     db.session.add(goingtoadd)
     db.session.commit()
+    return render_template('profile.html', form=form)
   return render_template('profile.html', form=form)
 
-@app.route("/profiles", methods=["GET" , "POST"])
+@app.route("/profiles/", methods=["GET" , "POST"])
 def profiles():
-  user=models.Users.query.all()
-  myData=ProfileSchema(many=True)
-  data= myData.dump(user)
-  return jsonify({"Users": data.data})
+  users=models.Users.query.all()
+  if request.method=="POST":
+    myData=ProfileSchema(many=True)
+    data= myData.dump(user)
+    return jsonify({"Users": data.data})
+  return render_template('userprofile.html', users=users)
   
 
 @app.route("/profile/<userid>" , methods=["GET" , "POST"])
 def profileuserid(userid):
   user = Users.query.filter_by(userid=userid).first()
-  date=str(user.profile_add_on)
-  return jsonify(userid=user.userid, profile_add_on=date, firstname=user.firstname, lastname=user.lastname, age=user.age, sex=user.sex)
+  if request.method=="POST":
+    date=str(user.profile_add_on)
+    return jsonify(userid=user.userid, profile_add_on=date, firstname=user.firstname, lastname=user.lastname, age=user.age, sex=user.sex)
+  return render_template('user.html', user=user)
+
   
   
 ###
@@ -92,4 +110,4 @@ def timeinfo():
   return now
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port="8888")
+    app.run(debug=True,host="0.0.0.0",port=8888)

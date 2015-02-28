@@ -6802,4 +6802,13 @@ td.visible-print {
   td.hidden-print {
     display: none !important;
   }
+   .maincontainer{
+   float:left;
+    background-color:#A9F5A9;
+    border:1px solid;
+    width:800px;
+	padding:20px;
+   
+   } 
+   
 }
